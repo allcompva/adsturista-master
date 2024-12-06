@@ -1,0 +1,42 @@
+  {
+    "expo": {
+      "name": "adsturista",
+      "slug": "adsturista",
+      "extra": {
+        "googleClientId": "572084472316-2e9m0s0o6ibmdqgivk4rj3t0jjpjq86q.apps.googleusercontent.com",
+        "redirectUri": "https://auth.expo.io/@martin2024/adsturista",
+        "eas": {
+          "projectId": "08c0dc5e-29df-4c28-9a25-279ac3a7b29e"
+        }
+      },
+      "platforms": ["ios", "android"],
+      "version": "1.0.0",
+      "orientation": "portrait",
+      "icon": "./assets/icon.png",
+      "userInterfaceStyle": "light",
+      "newArchEnabled": true,
+      "splash": {
+        "image": "./assets/splash-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
+      },
+      "ios": {
+        "supportsTablet": true
+      },
+      "android": {
+        "adaptiveIcon": {
+          "foregroundImage": "./assets/adaptive-icon.png",
+          "backgroundColor": "#ffffff"
+        },
+        "package": "com.martin2024.adsturista",
+        "googleServicesFile": "./google-services.json"
+      },
+      "web": {
+        "favicon": "./assets/favicon.png"
+      },
+      "owner": "martin2024",
+      "plugins": [
+        "expo-sqlite"
+      ]
+    }
+  }

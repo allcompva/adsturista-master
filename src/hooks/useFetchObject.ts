@@ -1,0 +1,29 @@
+import { useState, useEffect } from "react";
+
+export const useFetchObject = <T>(endpoint: string) => {
+  const [data, setData] = useState<T | null>(null); // Aquí el tipo esperado es un objeto
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(endpoint);
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        const result = await response.json();
+        setData(result); // Guarda directamente el objeto devuelto
+      } catch (err: any) {
+        setError(err.message || "Error fetching data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [endpoint]);
+
+  return { data, loading, error };
+};

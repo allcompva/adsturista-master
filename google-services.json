@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "572084472316",
+    "project_id": "steam-canto-409803",
+    "storage_bucket": "steam-canto-409803.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:572084472316:android:857dc2a1b981c2540a8a79",
+        "android_client_info": {
+          "package_name": "com.martin2024.adsturista"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "572084472316-8pl91rr2kkt9b7he8e0brj47ohlge9bh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChr4TfLmVMaP5oPQwmJa71tR0f_l4BgnY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "572084472316-2e9m0s0o6ibmdqgivk4rj3t0jjpjq86q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
