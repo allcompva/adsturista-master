@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface LoginScreenProps {
   navigation: any;
@@ -32,10 +31,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       const data = await response.json();
 
       if (data.firstLogin) {
-        navigation.replace("CompleteProfile", { username }); // Navega al formulario de completar perfil
+        navigation.replace("CompleteProfile", { username }); 
       } else {
-        // await AsyncStorage.setItem("userToken", data.token); // Guarda el token para futuros accesos
-        navigation.replace("Home"); // Redirige al Home
+        navigation.replace("Home"); 
       }
     } catch (error) {
       const err = error as Error;

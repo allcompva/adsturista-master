@@ -7,9 +7,11 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../MainNavigator/types';
 import LoadingIndicator from '../components/LoadingIndicator/LoadingIndicator';
 import { useFetchObject } from "../hooks/useFetchObject";
+import Carousel from '../components/carrusel';
+import { useAuth } from '../contexts/AuthContext';
+
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'DetailsScreen'>;
-// Tipos para navegación y rutas
 type DetailsScreenRouteProp = RouteProp<RootStackParamList, 'DetailsScreen'>;
 
 
@@ -26,24 +28,26 @@ interface Datos {
   whatsapp: string;
   descripcion: string;
   images: string;
+  is_favorite: boolean;
 }
 const DetailsScreen: React.FC<Props> = ({ navigation }) => {
-  const [isFavorite, setIsFavorite] = useState(false);
+
   const route = useRoute<DetailsScreenRouteProp>();
-  const { id } = route.params;
-  let ids = "";
-  if (id != undefined) {
-    ids = id;
-  }
+  const { id, isFavorite } = route.params;
+  console.log("Esto llega a details: ", id);
+  
+  
+  const { user } = useAuth();
 
   const handleFavoriteToggle = () => {
     setIsFavorite(!isFavorite);
   };
 
   const { data, loading, error } = useFetchObject<Datos>(
-    `https://recreas.net/BackEnd/Tur_comercio/getDetails?cuit=${id}`
+    `https://recreas.net/BackEnd/Tur_publicaciones/getDetails?cuit=${id}&mail=${user?.email}`
   );
-
+  const [_isFavorite, setIsFavorite] = useState(isFavorite);
+  console.log("imagenes", data?.images);
   if (loading) return <Text>Cargando...</Text>;
   if (error) return <Text>Error: {error}</Text>;
 
@@ -51,9 +55,13 @@ const DetailsScreen: React.FC<Props> = ({ navigation }) => {
   if (data?.whatsapp != undefined && data?.whatsapp != null) {
     cel = data?.whatsapp;
   }
-
+  let image : any ;
+  if (data?.images != undefined && data?.images != null) {
+    image = data.images;;
+  }
+  console.log(image);
   const openWhatsApp = () => {
-    const phoneNumber = cel; // Reemplaza con el número de teléfono
+    const phoneNumber = cel; 
     const whatsappURL = `https://wa.me/${phoneNumber}`;
     Linking.openURL(whatsappURL).catch((err) =>
       console.error("Error al abrir WhatsApp:", err)
@@ -64,40 +72,41 @@ const DetailsScreen: React.FC<Props> = ({ navigation }) => {
   if (data?.maps != undefined && data?.maps != null) {
     mapa = data?.maps;
   }
-    // Función para abrir Google Maps
     const openGoogleMaps = () => {
       const googleMapsURL = mapa;
       Linking.openURL(googleMapsURL).catch((err) =>
         console.error("Error al abrir Google Maps:", err)
       );
     };
-  
+  console.log("image: ", image);
+
+  const images = data?.images?data?.images:'[hola puto]';
+
   return (
     <SafeAreaView style={styles.container}>
       <><View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconContainer2}>
           <Ionicons name="chevron-back-outline" style={styles.backIcon} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleFavoriteToggle} style={styles.iconContainer}>
+        <TouchableOpacity  style={styles.iconContainer}>
           <MaterialCommunityIcons
-            name={isFavorite ? 'heart' : 'heart-outline'}
+            name={_isFavorite ? 'heart' : 'heart-outline'}
             size={36}
-            color={isFavorite ? 'orange' : '#FF6B00'} />
+            color={_isFavorite ? '#FF6B00' : '#FF6B00'} />
         </TouchableOpacity>
       </View><View style={styles.carruselContainer}>
-          <Carrusel id={ids} />
+            <Carousel image={images.split(',')} />
+
         </View>
         <View style={styles.contentContainer}>
           <Text style={styles.title}>{data?.titulo}</Text>
           <Text style={styles.description}>{data?.direccion}</Text>
 
-          {/* Enlace a Google Maps */}
           <TouchableOpacity style={styles.link} onPress={openGoogleMaps}>
           <FontAwesome name="map-marker" size={24} color="green" style={styles.icon} />
             <Text style={styles.text}>Ubicación exacta</Text>
           </TouchableOpacity>
 
-          {/* Enlace a WhatsApp */}
           <TouchableOpacity style={styles.link} onPress={openWhatsApp}>
             <FontAwesome name="whatsapp" size={24} color="green" style={styles.icon} />
             <Text style={styles.text}>Chat directo</Text>
@@ -121,7 +130,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   header: {
-    paddingTop: 30,
+    marginTop: -40,
+    paddingTop: 0,
     height: 120,
     backgroundColor: 'white',
   },
@@ -131,7 +141,7 @@ const styles = StyleSheet.create({
     color: '#FF6B00',
   },
   carruselContainer: {
-    height: '50%',
+    height: '100%',
     backgroundColor: 'gray',
   },
   contentContainer: {
@@ -139,13 +149,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopLeftRadius: 50,
     borderTopRightRadius: 50,
-    paddingTop: 20,
+    paddingTop: 30,
     paddingLeft: 30,
     paddingRight: 30,
     position: 'absolute',
     bottom: 0,
     alignSelf: 'center',
-    height: '60%',
+    height: '55%',
   },
   title: {
     fontSize: 24,
@@ -159,6 +169,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
     lineHeight: 20,
     color: '#666',
+
+    marginBottom:25,
   },
   description: {
     fontSize: 15,
@@ -186,15 +198,15 @@ const styles = StyleSheet.create({
   errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   errorText: { color: 'red', fontSize: 16 },
   link: {
-    flexDirection: "row", // Alinea ícono y texto horizontalmente
+    flexDirection: "row", 
     alignItems: "center",
     marginBottom: 16,
     padding: 8,
     borderRadius: 8,
-    backgroundColor: "#f5f5f5", // Fondo para el botón
+    backgroundColor: "#f5f5f5", 
   },
   icon: {
-    marginRight: 12, // Espaciado entre el ícono y el texto
+    marginRight: 12, 
   },
   text: {
     fontSize: 16,

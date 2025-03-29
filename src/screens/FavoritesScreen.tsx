@@ -1,91 +1,86 @@
-import React from 'react';
-import { View, ScrollView, Text, StyleSheet, ImageBackground } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, ScrollView, SafeAreaView, StyleSheet, Text, ImageBackground } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import Card from '../components/card';
 import Header from '../components/header';
 import GlobalStyles from '../styles/GlobalStyles';
+import { useAuth } from '../contexts/AuthContext';
+
+interface Item {
+  id_comercio: number;
+  nombre: string;
+  resenia: string;
+  fotos: string;
+  is_favorite: boolean;
+  id: number;
+}
 
 export default function FavoritesScreen() {
+  const [items, setItems] = useState<Item[]>([]);
+  const { user } = useAuth();
+
+  const fetchItems = useCallback(async () => {
+    try {
+      const response = await fetch(`https://recreas.net/BackEnd/Favoritos/GetByMail?mail=${user?.email}`);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      const data = await response.json();
+      setItems(data);
+    } catch (error) {
+      console.error('Error al cargar los datos:', error);
+    }
+  }, [user]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchItems();
+    }, [fetchItems])
+  );
+
   return (
     <ImageBackground
-      source={require('../assets/fondo3.png')} 
+      source={require('../assets/fondo4.png')}
       style={styles.background}
       resizeMode="cover"
     >
-
       <View style={styles.header}>
         <Header />
       </View>
-      <View >
+      <View style={styles.tabViewContainer}>
+        <Text style={{ paddingLeft: 25, fontSize: 24, fontWeight: '600', textAlign: 'left', width: '100%', paddingTop: 0, paddingBottom: 25 }}>Favoritos</Text>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-          
-          <View style={styles.cardContainer}>
-
-            <Card
-              title="Laberinto de Nono"
-              description="El parque tiene añ laberintos incluyendo el tradicional... Leer más"
-              imageUrl={require('../assets/images/loscocos.png')}
-              id="1"
-            />
-          </View>
-          <View style={styles.cardContainer}>
-            <Card
-              title="Cabaña de diseño y naturaleza"
-              description="Cabaña de diseño y naturaleza a una cuadra del río está en Córdoba..."
-              imageUrl={require('../assets/images/Alojamiento1.png')}
-              id="4"
-            />
-          </View>
-          <View style={styles.cardContainer}>
-            <Card
-              title="El Nazareno"
-              description="Con una trayectoria de más de 20 años, la marca oriunda de Traslasierra y..."
-              imageUrl={require('../assets/images/Comercio1.png')}
-              id="7"
-            />
-          </View>
-          <View style={styles.cardContainer}>
-            <Card
-              title="La Terraza Resto-Bar"
-              description="Desayuno, Almuerzo, Cena, Brunch, Abierto hasta tarde..."
-              imageUrl={require('../assets/images/Resto1.png')}
-              id="10"
-            />
-          </View>
-          <View style={styles.cardContainer}>
-            <Card
-              title="Plaza de Nono"
-              description="Feria de artesanías y producto regionales: Todos los días desde las 19 horas..."
-              imageUrl={require('../assets/images/Resto2.png')}
-              id="11"
-            />
-          </View>
+          {items.length > 0 ? (
+            items.map((item) => (
+              <View key={item.id_comercio} style={styles.cardContainer}>
+                <Card
+                  title={item.nombre}
+                  description={item.resenia}
+                  imageUrl={{ uri: `https://recreas.net/assets/images/${item.fotos.split(',')[0]}` }}
+                  id={item.id_comercio.toString()}
+                  _isFavorite={item.is_favorite}
+                  idP={item.id}
+                  onReload={fetchItems}
+                  showExtra={true}
+                />
+              </View>
+            ))
+          ) : (
+            <Text>No hay datos disponibles</Text>
+          )}
         </ScrollView>
-      </View>
-    </ImageBackground>
+        </View>
+        </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    width: '100%', 
+  background: { flex: 1, width: '100%' },
+  header: { height: 100, marginTop: 0 },
+  tabViewContainer: { flex: 1 },
 
-  },
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-
-  },
-  header: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    height: 80, 
-    marginTop: 50,
-  },
   scrollContainer: {
-    paddingBottom: 180,
+    paddingBottom: 150,
   },
   cardContainer: {
     marginBottom: 20,

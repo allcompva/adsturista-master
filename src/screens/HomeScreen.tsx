@@ -8,6 +8,8 @@ import FourthRoute from '../components/NestedTabs/FourthRoute';
 import Header from '../components/header';
 
 type Route = {
+
+  
   key: string;
   title: string;
 };
@@ -24,18 +26,21 @@ export default function NestedTabsScreen() {
     { key: 'fourth', title: 'Resto' },
   ]);
 
+
+
+  
   const renderTabBar = (props: SceneRendererProps & { navigationState: State }) => (
-    <View style={{ position: 'sticky' }}>
+    <View>
       <TabBar
         {...props}
         scrollEnabled
         indicatorStyle={{ backgroundColor: "orange" }}
         style={{ backgroundColor: "#FFFFFF" }} 
-        labelStyle={{ fontSize: 14 }} 
         activeColor="#000000"
         inactiveColor="#AAAAAA" 
+        
       />
-      <View style={{ height: 50, marginBottom: 10, marginTop: 40, width: '90%', marginLeft: '5%', borderRadius: 15 }}>
+      <View style={{ height: 50, marginBottom: 10, marginTop: 30, width: '90%', marginLeft: '5%', borderRadius: 15 }}>
         <TextInput
           style={styles.input}
           placeholder="Buscar..."
@@ -53,6 +58,8 @@ export default function NestedTabsScreen() {
     third: ThirdRoute,
     fourth: FourthRoute,
   });
+
+
 
   return (
     <ImageBackground
@@ -78,7 +85,7 @@ export default function NestedTabsScreen() {
 
 const styles = StyleSheet.create({
   background: { flex: 1, width: '100%' },
-  header: { height: 100, marginTop: 45 },
+  header: { height: 100, marginTop: 0 },
   tabViewContainer: { flex: 1 },
   input: { flex: 1, height: 20, backgroundColor: 'lightgray', borderRadius: 15, paddingLeft: 20 },
   iconContainer: { width: 40, height: 20, backgroundColor: '#ccc', borderRadius: 20 },

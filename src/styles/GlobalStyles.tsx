@@ -5,18 +5,17 @@ const { height: screenHeight } = Dimensions.get('window');
 const GlobalStyles = ScaledSheet.create({
     logo: {
         backgroundColor: 'transparent',
-        width: 120, // Ajusta el ancho según tu imagen
-        height: 95, // Ajusta la altura según tu imagen
+        width: 120, 
+        height: 95, 
         top: 50,
     },
 
-    // Contenedor principal
     container: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'white',
-        padding: '0@s', // Escala horizontalmente
+        padding: '0@s', 
     },
     gradient: {
         position: 'absolute',
@@ -24,7 +23,7 @@ const GlobalStyles = ScaledSheet.create({
         left: 0,
         right: 0,
         bottom: 0,
-        height: screenHeight, // Ocupa toda la altura de la pantalla
+        height: screenHeight,
     },
     tabViewContainer: {
         flex: 1,
@@ -36,19 +35,17 @@ const GlobalStyles = ScaledSheet.create({
     header: {
         paddingHorizontal: 20,
         alignItems: 'center',
-        backgroundColor: 'transparent', // Color de fondo para el encabezado
+        backgroundColor: 'transparent', 
         position: 'absolute',
         top: '7%',
     },
-    // Estilo para Título
     title: {
-        fontSize: '24@s', // Escala horizontalmente
+        fontSize: '24@s', 
         fontWeight: 'bold',
         color: '#2b2b2b',
-        marginBottom: '10@vs', // Escala verticalmente
+        marginBottom: '10@vs', 
     },
 
-    // Estilo para Subtítulo
     subtitle: {
         fontSize: '20@s',
         fontWeight: '600',
@@ -62,38 +59,35 @@ const GlobalStyles = ScaledSheet.create({
         marginBottom: '8@vs',
         textAlign: 'center',
     },
-    // Estilo para Párrafo
     paragraph: {
-        fontSize: '16@ms', // Escala en función del ancho y altura
+        fontSize: '16@ms', 
         color: '#333',
-        lineHeight: '24@vs', // Espaciado entre líneas
+        lineHeight: '24@vs', 
         textAlign: 'justify',
         marginBottom: '12@vs',
     },
     paragraphCenter: {
-        fontSize: '16@ms', // Escala en función del ancho y altura
+        fontSize: '16@ms', 
         color: '#333',
-        lineHeight: '24@vs', // Espaciado entre líneas
+        lineHeight: '24@vs', 
         marginBottom: '12@vs',
         textAlign: 'center',
     },
-    // Caja de texto para ingreso de datos
     inputBox: {
-        width: '100%',  // Abarca todo el ancho del contenedor padre
-        paddingVertical: '10@vs',  // Padding vertical responsivo
-        paddingHorizontal: '12@s',  // Padding horizontal
-        fontSize: '16@ms',  // Texto escalable
-        borderWidth: '1@s',  // Borde fino y responsivo
-        borderColor: '#lightgray',  // Color de borde suave
-        borderRadius: '8@s',  // Bordes redondeados
-        marginBottom: '15@vs',  // Separación entre inputs
-        backgroundColor: '#fff',  // Fondo blanco
-        color: 'gray',  // Color del texto
+        width: '100%',  
+        paddingVertical: '10@vs',  
+        paddingHorizontal: '12@s',  
+        fontSize: '16@ms',  
+        borderWidth: '1@s',  
+        borderColor: '#lightgray',  
+        borderRadius: '8@s',  
+        marginBottom: '15@vs',  
+        backgroundColor: '#fff', 
+        color: 'gray',  
     },
     inputBoxFocused: {
-        borderColor: '#007bff',  // Cambia el color del borde al enfocarse
+        borderColor: '#007bff',  
     },
-    // Estilo para Botones
     button: {
         backgroundColor: '#007bff',
         paddingVertical: '10@vs',
@@ -108,14 +102,12 @@ const GlobalStyles = ScaledSheet.create({
         fontWeight: '600',
     },
 
-    // Estilo para Etiquetas
     label: {
         fontSize: '14@ms',
         color: '#666',
         marginBottom: '4@vs',
     },
 
-    // Estilo para Menú
     menu: {
         flexDirection: 'row',
         justifyContent: 'space-around',
@@ -127,38 +119,35 @@ const GlobalStyles = ScaledSheet.create({
         color: '#333',
     },
 
-    // Botón con imagen a la izquierda y texto a la derecha
     buttonWithIcon: {
-        flexDirection: 'row',  // Imagen y texto en línea horizontal
-        alignItems: 'center',  // Alineación vertical centrada
-        paddingVertical: '12@vs',  // Padding vertical responsivo
-        paddingHorizontal: '20@s', // Padding horizontal responsivo
+        flexDirection: 'row',  
+        alignItems: 'center',  
+        paddingVertical: '12@vs',  
+        paddingHorizontal: '20@s', 
         backgroundColor: 'transparent',
         borderRadius: '8@s',
         marginTop: '10@vs',
     },
     buttonIcon: {
-        width: '24@s',  // Tamaño de la imagen
+        width: '24@s',  
         height: '24@s',
-        marginRight: '12@s',  // Espacio entre la imagen y el texto
+        marginRight: '12@s',  
     },
     buttonIconText: {
-        fontSize: '16@ms',  // Texto escalable
+        fontSize: '16@ms',  
         color: 'black',
         fontWeight: '600',
     },
     buttonIconTextBold: {
-        fontSize: '15@ms',  // Texto escalable
+        fontSize: '15@ms',  
         color: 'black',
         fontWeight: '700',
     },
-    // Estilo para el combo de selección
     pickerContainer: {
-        width: '100%',  // Ocupa todo el ancho disponible
-        borderWidth: '1@s',
+        width: '100%',  
         borderColor: '#ddd',
         borderRadius: '8@s',
-        paddingVertical: '10@vs',  // Padding vertical responsivo
+        paddingVertical: '10@vs',  
         paddingHorizontal: '12@s',
         backgroundColor: '#fff',
         marginBottom: '10@vs',
@@ -168,7 +157,7 @@ const GlobalStyles = ScaledSheet.create({
         color: '#333',
     },
     pickerFocused: {
-        borderColor: '#007bff',  // Borde azul al enfocar
+        borderColor: '#007bff', 
     },
 });
 

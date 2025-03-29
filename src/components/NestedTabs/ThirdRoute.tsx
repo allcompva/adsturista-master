@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { ScrollView, View, StyleSheet, Text } from 'react-native';
-import { useFetch } from '../../hooks/useFetch'; // Importa el hook
+import { useFetch } from '../../hooks/useFetch'; 
 import Card from '../card';
 import LoadingIndicator from  '../LoadingIndicator/LoadingIndicator';
 
@@ -23,12 +23,15 @@ const ThirdRoute = () => {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       {data.map((item) => (
-        <View style={styles.cardContainer} key={item.id}>
+        <View style={styles.cardContainer} key={item.id_comercio}>
           <Card
             title={item.nombre}
             description={item.resenia}
-            imageUrl={{ uri: 'https://recreas.net' + item.img }} 
+            imageUrl={{ uri: `https://recreas.net/assets/images/${item.fotos.split(',')[0]}` }}
             id={item.id_comercio}
+            _isFavorite={item.is_favorite}
+            idP={item.id}
+            showExtra={false}
           />
         </View>
       ))}

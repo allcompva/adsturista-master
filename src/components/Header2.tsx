@@ -6,16 +6,14 @@ import { RootStackParamList } from "../MainNavigator/types";
 import GlobalStyles from "../styles/GlobalStyles";
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'InfoScreen'>;
-
 const Header2: React.FC = () => {
     const navigation = useNavigation<LoginScreenNavigationProp>();
 
-    // Maneja la navegación al presionar el ícono de información
     const handlePressInfo = () => {
-        navigation.navigate('InfoScreen'); // Navega a la pantalla InfoScreen
+        navigation.navigate('InfoScreen');
     };
     const handlePress = () => {
-        navigation.navigate('PuntosAcumuladosScreen'); // Navega a la pantalla InfoScreen
+        navigation.navigate('PuntosAcumuladosScreen'); 
     };
     return (
         <View style={styles.buttonContainer}>

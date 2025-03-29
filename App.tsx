@@ -1,13 +1,21 @@
 import 'react-native-gesture-handler';
-import React from 'react';
+import React, { useEffect } from 'react';
 import MainNavigator from './src/MainNavigator/MainNavigator';
-import * as SQLite from 'expo-sqlite';
-import { AuthProvider } from './src/contexts/AuthContext'; // Ajusta la ruta según tu estructura
+import { GoogleSignin } from '@react-native-google-signin/google-signin'; 
+import { AuthProvider } from './src/contexts/AuthContext'; 
 
 export default function App() {
 
-    
-    return <AuthProvider><MainNavigator />;</AuthProvider>
-    
- 
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: '572084472316-2e9m0s0o6ibmdqgivk4rj3t0jjpjq86q.apps.googleusercontent.com', 
+      offlineAccess: true, 
+    });
+  }, []); 
+
+  return (
+    <AuthProvider>
+      <MainNavigator />
+    </AuthProvider>
+  );
 }

@@ -1,39 +1,38 @@
-import React, { createContext, useContext, useState } from 'react';
-
-// Define el tipo de datos del usuario
-interface User {
-  displayName: string;
-  id: string;
-  name: string;
-  email: string;
-  photoUrl?: string;
-  token: string;
-}
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 interface AuthContextProps {
-  user: User | null;
-  setUser: (user: User | null) => void;
+  user: FirebaseAuthTypes.User | null;
+  isLoading: boolean;
+  setUser: (user: FirebaseAuthTypes.User | null) => void;
 }
 
-// Crea el contexto
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
-// Proveedor del contexto
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = auth().onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
-      {children}
-    </AuthContext.Provider>
+<AuthContext.Provider value={{ user, isLoading, setUser }}>
+  {children}
+</AuthContext.Provider>
   );
 };
 
-// Hook para usar el contexto
-export const useAuth = (): AuthContextProps => {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth debe usarse dentro de un AuthProvider');
+    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
   }
   return context;
 };

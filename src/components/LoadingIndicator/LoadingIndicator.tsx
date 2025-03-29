@@ -2,7 +2,7 @@ import React from 'react';
 import { View, ActivityIndicator, StyleSheet, Text } from 'react-native';
 
 interface LoadingIndicatorProps {
-  message?: string; // Mensaje opcional que puedes mostrar mientras carga
+  message?: string; 
 }
 
 const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({ message = 'Cargando...' }) => {
@@ -16,15 +16,15 @@ const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({ message = 'Cargando
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // Ocupará todo el espacio disponible
-    justifyContent: 'center', // Centra verticalmente
-    alignItems: 'center', // Centra horizontalmente
-    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Fondo blanco translúcido
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
   },
   text: {
-    marginTop: 10, // Separación entre el indicador y el texto
+    marginTop: 10, 
     fontSize: 16,
-    color: '#555', // Cambia el color del texto según tu diseño
+    color: '#555', 
   },
 });
 

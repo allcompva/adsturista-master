@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ImageBackground, StyleSheet, TouchableOpacity, ImageSourcePropType } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-
+import { useAuth } from '../contexts/AuthContext';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../MainNavigator/types';
 
@@ -13,39 +13,74 @@ interface CardProps {
   description: string;
   imageUrl: ImageSourcePropType;
   id: string;
+  _isFavorite: Boolean;
+  idP: number;
+  onReload?: () => void;
+  showExtra: boolean;
 }
 
-const Card: React.FC<CardProps> = ({ title, description, imageUrl, id }) => {
-  const [isFavorite, setIsFavorite] = useState(false);
-  const navigation = useNavigation<DetailsScreenNavigationProp>();
+const Card: React.FC<CardProps> = ({ title, description, imageUrl, id, _isFavorite, idP, onReload, showExtra, }) => {
+  const [isFavorite, setIsFavorite] = useState(_isFavorite);
 
-  const handleFavoriteToggle = () => {
+  const navigation = useNavigation<DetailsScreenNavigationProp>();
+  console.log(imageUrl);
+  const { user } = useAuth();
+
+  const handleFavoriteToggle = async () => {
+    console.log("id publicacion:", idP);
+    console.log("id publicacion:", user?.email);
+    if(idP == 0)
+    {
+      return;
+    }
+    if(user?.email == '')
+      {
+        return;
+      }
+    const data = {
+      id_publicacion: idP,
+      mail: user?.email,
+    };
+
+    const response = await fetch('https://recreas.net/backend/Favoritos/insert', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
     setIsFavorite(!isFavorite);
+    if (onReload) {
+      console.log('Llamando a onReload desde Card');
+      onReload();
+    }
+
   };
 
   const handlePress = () => {
-    navigation.navigate('DetailsScreen', { id });
+    navigation.navigate('DetailsScreen', { id, isFavorite });
   };
 
   return (
     <TouchableOpacity onPress={handlePress} style={styles.cardContainer}>
-        <ImageBackground source={imageUrl} style={styles.backgroundImage} imageStyle={styles.imageStyle}>
-          <View style={styles.footer}>
-            <View style={styles.textContainer}>
-              <Text style={styles.title}>{title}</Text>
-              <Text numberOfLines={2} ellipsizeMode="tail" style={styles.content}>
-                {id}
-              </Text>
-            </View>
-            <TouchableOpacity onPress={handleFavoriteToggle} style={styles.iconContainer}>
-              <MaterialCommunityIcons
-                name={isFavorite ? 'heart' : 'heart-outline'}
-                size={24}
-                color={isFavorite ? 'red' : 'white'}
-              />
-            </TouchableOpacity>
+      <ImageBackground source={imageUrl} style={styles.backgroundImage} imageStyle={styles.imageStyle}>
+        <View style={styles.footer}>
+          <View style={styles.textContainer}>
+            <Text style={styles.title}>{title}</Text>
+            <Text numberOfLines={2} ellipsizeMode="tail" style={styles.content}>
+              {description}
+            </Text>
           </View>
-        </ImageBackground>
+          {!showExtra && (<TouchableOpacity onPress={handleFavoriteToggle} style={styles.iconContainer}>
+            <MaterialCommunityIcons
+              name={isFavorite ? 'heart' : 'heart-outline'}
+              size={24}
+              color={isFavorite ? '#FF6B00' : 'white'}
+            />
+          </TouchableOpacity>)}
+        </View>
+      </ImageBackground>
     </TouchableOpacity>
   );
 };

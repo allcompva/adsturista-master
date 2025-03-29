@@ -2,32 +2,37 @@ import React, { useState } from 'react';
 import { Dimensions, Image, StyleSheet, View, Text, SafeAreaView, Alert, ImageBackground } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Header from '../components/header';
-import { Menu, Provider } from 'react-native-paper';
+import { IconButton, Menu, Provider } from 'react-native-paper';
+import { Ionicons } from '@expo/vector-icons';
+
 
 const { height: screenHeight } = Dimensions.get('window');
 
 export default function HomeScreen() {
   const [visibleMenuIndex, setVisibleMenuIndex] = useState<number | null>(null);
 
-  const openMenu = (index: number) => setVisibleMenuIndex(index);
+  const openMenu = (index : number) => setVisibleMenuIndex(index);
   const closeMenu = () => setVisibleMenuIndex(null);
 
-  const renderNotification = (index: number) => (
+  const renderNotification = (index : number) => (
     <View key={index}>
       <View style={styles.titNoti}>
         <Text style={{ paddingLeft: 35, fontSize: 18, color: '#21005D', fontWeight: '600' }}>
           Título notificación
         </Text>
-    
+
         <Menu
           visible={visibleMenuIndex === index}
           onDismiss={closeMenu}
+       
           anchor={
-            <Icon
+            <View>
+            <Ionicons
               name="ellipsis-vertical-outline"
               style={styles.infoIconMenu}
               onPress={() => openMenu(index)}
             />
+          </View>
           }
         >
           <Menu.Item onPress={() => { closeMenu(); Alert.alert("Titulo Notificación", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."); }} title="Ver" />
@@ -46,7 +51,7 @@ export default function HomeScreen() {
   return (
 
     <Provider>
-      <SafeAreaView style={[styles.container, { marginTop: 35 }]}>
+      <SafeAreaView style={[styles.container, { marginTop: 0 }]}>
         <ImageBackground
           source={require('../assets/fondo4.png')} 
           style={styles.background}
@@ -57,7 +62,7 @@ export default function HomeScreen() {
           </View>
 
           <View>
-            <Text style={{ paddingLeft: 25, fontSize: 24, fontWeight: '600', marginBottom: 15 }}>Notificaciones</Text>
+            <Text style={{ paddingLeft: 25, fontSize: 24, fontWeight: '600', marginBottom: 15, marginTop: 20 }}>Notificaciones</Text>
           </View>
 
 
@@ -80,7 +85,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between', 
     paddingHorizontal: 20, 
     height: 80,
-    marginTop: 15,
+    marginTop: 5,
   },
   logo: {
     width: 100,
@@ -101,7 +106,7 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     paddingHorizontal: 20,
-    marginTop: -40,
+    marginTop: -80,
   },
   iconDatos: {
     marginLeft: 40,

@@ -1,9 +1,8 @@
 
-// Define los parámetros de las rutas del Stack Navigator
 export type RootStackParamList = {
   LoginScreen: undefined;
   Main: undefined;
-  DetailsScreen: { id: string };  
+  DetailsScreen: { id: string; isFavorite: Boolean; };  
   InfoScreen: undefined;
   NotificationsScreen: undefined;
   FormScreen: undefined;
@@ -15,5 +14,6 @@ export type RootStackParamList = {
   NotificationScreen: undefined;
   ProfileScreen: undefined;
   LoginSocial: undefined;
+  PromoList: undefined;
 };
 

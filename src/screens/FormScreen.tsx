@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ImageBackground } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { useAuth } from '../contexts/AuthContext'; // Ajusta la ruta según tu estructura
+import { useAuth } from '../contexts/AuthContext';
 import { StackNavigationProp } from '@react-navigation/stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type RootStackParamList = {
   LoginScreen: undefined;
-  HomeScreen: undefined;
+  Main: undefined;
 };
 
-type InfoScreenNavigationProp = StackNavigationProp<RootStackParamList, 'HomeScreen'>;
+type InfoScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Main'>;
 
 interface Props {
   navigation: InfoScreenNavigationProp;
@@ -17,24 +18,60 @@ interface Props {
 
 
 const FormScreen: React.FC<Props> = ({ navigation }) => {
-  // Estados para cada campo del formulario
-  const [days, setDays] = useState('');
-  const [people, setPeople] = useState('');
-  const [purpose, setPurpose] = useState('');
-  const [isFirstVisit, setIsFirstVisit] = useState('');
-  const [travelMethod, setTravelMethod] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
-  const [items, setItems] = useState([
-    { label: 'Transporte Público', value: 'Transporte Público' },
-    { label: 'Agencia', value: 'Agencia' },
-    { label: 'Movilidad Propia', value: 'Movilidad Propia' },
+  const { user } = useAuth();
+  const [mail_turista, setmail_turista] = useState(user?.email);
+
+
+  
+
+  const [days, setDays] = useState<string | null>(null);
+  const [openDays, setOpenDays] = useState(false);
+  const [itemsDays, setItemsDays] = useState([
+    { label: 'Solo hoy', value: 'Solo hoy' },
+    { label: 'El fin de semana', value: 'El fin de semana' },
+    { label: '1 Semana', value: '1 Semana' },
+    { label: '2 Semanas', value: '2 Semanas' },
+    { label: 'Mas de 2 Semanas', value: 'Mas de 2 Semanas' },
   ]);
 
-  const { user } = useAuth();
 
-  // Función para enviar los datos al backend
+
+
+  const [purpose, setPurpose] = useState<string | null>(null);
+  const [openPurpose, setOpenPurpose] = useState(false);
+  const [itemsPurpose, setItemsPurpose] = useState([
+    { label: 'Turismo', value: 'turismo' },
+    { label: 'Negocios', value: 'negocios' },
+  ]);
+
+
+  const [people, setPeople] = useState<string | null>(null);
+  const [openPeople, setOpenPeople] = useState(false);
+  const [itemsPeople, setItemsPeople] = useState([
+    { label: 'Viajo Solo', value: 'Viajo Solo' },
+    { label: 'Hasta 4 Acompañantes', value: 'Hasta 4 Acompañantes' },
+    { label: 'Mas de 4 Acompañantes', value: 'Mas de 4 Acompañantes' },
+  ]);
+
+
+  const [IsFirstVisit, setIsFirstVisit] = useState<string | null>(null);
+  const [openFirstVisit, setOpenFirstVisit] = useState(false);
+  const [itemsFirstVisit, setItemsFirstVisit] = useState([
+    { label: 'Si', value: 'Si' },
+    { label: 'No', value: 'no' },
+  ]);
+
+  const [TravelMethod, setTravelMethod] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState([
+    { label: 'Transporte Público', value: 'Transporte_Público' },
+    { label: 'Agencia', value: 'Agencia' },
+    { label: 'Movilidad Propia', value: 'Movilidad_Propia' },
+  ]);
+
+
   const handleSubmit = async () => {
-    if (!days || !people || !purpose || !travelMethod || !isFirstVisit) {
+    if (!days || !people || !purpose || !TravelMethod || !IsFirstVisit) {
       Alert.alert('Error', 'Por favor, completa todos los campos.');
       return;
     }
@@ -43,12 +80,20 @@ const FormScreen: React.FC<Props> = ({ navigation }) => {
       days,
       people,
       purpose,
-      travelMethod,
-      isFirstVisit,
+      TravelMethod,
+      IsFirstVisit,
+      mail_turista,
     };
-
     try {
-      const response = await fetch('https://example.com/api/form', {
+      console.log(data.days);
+      console.log(data.people);
+      console.log(data.purpose);
+      console.log(data.TravelMethod);
+      console.log(data.IsFirstVisit);
+      console.log(data.mail_turista);
+      console.log(mail_turista);
+      console.log(JSON.stringify(data));
+      const response = await fetch('https://recreas.net/backend/Tur_visitas_x_turista/insert', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,10 +102,14 @@ const FormScreen: React.FC<Props> = ({ navigation }) => {
       });
 
       if (response.ok) {
+        await AsyncStorage.setItem(
+          "@formCompleted",
+          JSON.stringify({ isCompleted: true }));
         const result = await response.json();
-        Alert.alert('Éxito', 'Formulario enviado correctamente.');
+        Alert.alert('', 'Formulario enviado correctamente.');
+        
         console.log('Resultado:', result);
-        navigation.navigate('HomeScreen'); // Redirigir a la próxima pantalla
+        navigation.navigate('Main');
       } else {
         const error = await response.json();
         Alert.alert('Error', error.message || 'No se pudo enviar el formulario.');
@@ -86,57 +135,69 @@ const FormScreen: React.FC<Props> = ({ navigation }) => {
             {user.displayName}
           </Text>
         )}
+        <View style={{ zIndex: 5 }}>
+          <DropDownPicker
+            open={openDays}
+            value={days}
+            items={itemsDays}
+            setOpen={setOpenDays}
+            setValue={setDays}
+            setItems={setItemsDays}
+            placeholder="¿Cuántos días estará aquí?"
+            style={styles.inputBox}
+          />
+        </View>
 
-        {/* TextInput: Días de estancia */}
-        <TextInput
-          style={styles.inputBox}
-          placeholder="¿Cuántos días estará aquí?"
-          placeholderTextColor="gray"
-          value={days}
-          onChangeText={setDays}
-        />
+        <View style={{ zIndex: 4 }}>
+          <DropDownPicker
+            open={openPeople}
+            value={people}
+            items={itemsPeople}
+            setOpen={setOpenPeople}
+            setValue={setPeople}
+            setItems={setItemsPeople}
+            placeholder="¿Cuántas personas lo acompañan?"
+            style={styles.inputBox}
+          />
+        </View>
 
-        {/* TextInput: Personas acompañantes */}
-        <TextInput
-          style={styles.inputBox}
-          placeholder="¿Cuántas personas lo acompañan?"
-          placeholderTextColor="gray"
-          value={people}
-          onChangeText={setPeople}
-        />
-
-        {/* TextInput: Propósito de la visita */}
-        <TextInput
-          style={styles.inputBox}
-          placeholder="¿Visita por turismo o negocios?"
-          placeholderTextColor="gray"
-          value={purpose}
-          onChangeText={setPurpose}
-        />
-
-        {/* DropDownPicker: Método de viaje */}
-        <DropDownPicker
-          open={open}
-          value={travelMethod}
-          items={items}
-          setOpen={setOpen}
-          setValue={setTravelMethod}
-          setItems={setItems}
-          placeholder="¿Cómo viajó?"
-          style={styles.inputBox}
-        />
-
-        {/* TextInput: Primera vez */}
-        <TextInput
-          style={styles.inputBox}
-          placeholder="¿Es su primera vez aquí?"
-          placeholderTextColor="gray"
-          value={isFirstVisit}
-          onChangeText={setIsFirstVisit}
-        />
+        <View style={{ zIndex: 3 }}>
+          <DropDownPicker
+            open={openPurpose}
+            value={purpose}
+            items={itemsPurpose}
+            setOpen={setOpenPurpose}
+            setValue={setPurpose}
+            setItems={setItemsPurpose}
+            placeholder="¿Visita por turismo o negocios?"
+            style={styles.inputBox}
+          />
+        </View>
+        <View style={{ zIndex: 2 }}>
+          <DropDownPicker
+            open={open}
+            value={TravelMethod}
+            items={items}
+            setOpen={setOpen}
+            setValue={setTravelMethod}
+            setItems={setItems}
+            placeholder="¿Cómo viajó?"
+            style={styles.inputBox}
+          />
+        </View>
+        <View style={{ zIndex: 1 }}>
+          <DropDownPicker
+            open={openFirstVisit}
+            value={IsFirstVisit}
+            items={itemsFirstVisit}
+            setOpen={setOpenFirstVisit}
+            setValue={setIsFirstVisit}
+            setItems={setItemsFirstVisit}
+            placeholder="¿Es su primera visita?"
+            style={styles.inputBox}
+          />
+        </View>
       </View>
-
-      {/* Botones */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleSubmit}>
           <Text style={styles.buttonText}>Continuar</Text>

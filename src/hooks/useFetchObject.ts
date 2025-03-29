@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 export const useFetchObject = <T>(endpoint: string) => {
-  const [data, setData] = useState<T | null>(null); // Aquí el tipo esperado es un objeto
+  const [data, setData] = useState<T | null>(null); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,7 +14,7 @@ export const useFetchObject = <T>(endpoint: string) => {
           throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
         const result = await response.json();
-        setData(result); // Guarda directamente el objeto devuelto
+        setData(result); 
       } catch (err: any) {
         setError(err.message || "Error fetching data");
       } finally {

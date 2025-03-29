@@ -1,34 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
-import { NavigationContainer, RouteProp } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
+import { View, ActivityIndicator, Alert } from "react-native";
+import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Ionicons } from "@expo/vector-icons";
+
 import HomeScreen from "../screens/HomeScreen";
 import FavoritesScreen from "../screens/FavoritesScreen";
 import InfoScreen from "../screens/InfoScreen";
-import LoginScreen from "../screens/LoginScreen";
 import LoginSocial from "../screens/LoginSocial";
-import DetailsScreen from "../screens/DetailsScreen";
 import FormScreen from "../screens/FormScreen";
-import PuntosAcumuladosScreen from "../screens/PuntosAcumuladosScreen";
-import TransferenciaPuntosScreen from "../screens/TransferenciaPuntosScreen";
-import ConfirmacionCompraClienteSreen from "../screens/TransferenciaPuntosScreen";
-import TransaccionExitoScreen from "../screens/TransaccionExitoScreen";
 import NotificationScreen from "../screens/NotificationScreen";
 import ProfileScreen from "../screens/ProfileScreen";
-import LoginSocialScreen from "../screens/LoginSocial";
-import { Ionicons } from "@expo/vector-icons";
-import { RootStackParamList } from "./types";
+import DetailsScreen from "../screens/DetailsScreen";
+import PromoList from "../screens/PromoList";
+import PuntosAcumuladosScreen from "../screens/PuntosAcumuladosScreen";
 
-type TabParamList = {
-  Home: undefined;
-  Favoritos: undefined;
-  Notificaciones: undefined;
-  Perfil: undefined;
-  LoginS: undefined;
-};
 
-const Tab = createBottomTabNavigator<TabParamList>();
-const Stack = createStackNavigator<RootStackParamList>();
+import { useAuth } from "../contexts/AuthContext";
+
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
 function TabNavigator() {
   return (
     <Tab.Navigator
@@ -77,19 +73,6 @@ function TabNavigator() {
         }}
       />
       <Tab.Screen
-        name="LoginS"
-        component={LoginSocialScreen}
-        options={{
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "person-circle" : "person-circle-outline"}
-              color={color}
-              size={24}
-            />
-          ),
-        }}
-      />
-      <Tab.Screen
         name="Perfil"
         component={ProfileScreen}
         options={{
@@ -102,41 +85,129 @@ function TabNavigator() {
           ),
         }}
       />
+      <Tab.Screen
+        name="Info"
+        component={InfoScreen}
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "information-circle" : "information-circle-outline"}
+              color={color}
+              size={24}
+            />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 }
 
 export default function MainNavigator() {
+  const { user, isLoading } = useAuth();
+  const [initialRoute, setInitialRoute] = useState<string>("LoginSocial");
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const user = await AsyncStorage.getItem("@user");
+      const formStatus = await AsyncStorage.getItem("@formCompleted");
+
+      if (user) {
+        const isFormCompleted = formStatus
+          ? JSON.parse(formStatus).isCompleted
+          : false;
+        setInitialRoute(isFormCompleted ? "Main" : "FormScreen");
+      } else {
+        setInitialRoute("LoginSocial");
+      }
+    };
+
+    checkSession();
+  }, []);
+
+  useEffect(() => {
+    const registerForPushNotificationsAsync = async () => {
+      if (!Device.isDevice) {
+        Alert.alert(
+          "Dispositivo no compatible",
+          "Debe usar un dispositivo físico para recibir notificaciones push."
+        );
+        return;
+      }
+
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+
+      if (finalStatus !== "granted") {
+        console.log("Permisos no concedidos para notificaciones.");
+        return;
+      }
+
+      const token = (await Notifications.getExpoPushTokenAsync()).data;
+      console.log("Expo Push Token:", token);
+
+     
+      try {
+        await fetch(`https://recreas.net/BackEnd/Tur_turista/setToken?email=${user?.email}&token=${token}`, {
+          method: "GET"
+        });
+        console.log("Token registrado correctamente.");
+      } catch (error) {
+        console.error("Error al registrar el token:", error);
+      }
+    };
+
+    const notificationListener =
+      Notifications.addNotificationReceivedListener((notification) => {
+        console.log("Notificación recibida:", notification);
+        Alert.alert(
+          notification.request.content.title?
+          notification.request.content.title: '',
+          notification.request.content.body?
+          notification.request.content.body: ''
+        );
+      });
+
+    const responseListener =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log("Interacción con la notificación:", response);
+      });
+
+    registerForPushNotificationsAsync();
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener);
+      Notifications.removeNotificationSubscription(responseListener);
+    };
+  }, [user]);
+
+  if (!initialRoute) return null;
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#FF6B00" />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{ headerShown: false }}
-        initialRouteName="LoginSocial"
+        initialRouteName={initialRoute}
       >
         <Stack.Screen name="LoginSocial" component={LoginSocial} />
-        <Stack.Screen name="LoginScreen" component={LoginScreen} />
-
-
-        <Stack.Screen name="Main" component={TabNavigator} />
-        <Stack.Screen name="InfoScreen" component={InfoScreen} />
         <Stack.Screen name="FormScreen" component={FormScreen} />
         <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
-        <Stack.Screen
-          name="PuntosAcumuladosScreen"
-          component={PuntosAcumuladosScreen}
-        />
-        <Stack.Screen
-          name="TransferenciaPuntosScreen"
-          component={TransferenciaPuntosScreen}
-        />
-        <Stack.Screen
-          name="ConfirmacionCompraClienteSreen"
-          component={ConfirmacionCompraClienteSreen}
-        />
-        <Stack.Screen
-          name="TransaccionExitoScreen"
-          component={TransaccionExitoScreen}
-        />
+        <Stack.Screen name="PuntosAcumuladosScreen" component={PuntosAcumuladosScreen} />
+        <Stack.Screen name="PromoList" component={PromoList} />
+        <Stack.Screen name="Main" component={TabNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
   );

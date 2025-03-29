@@ -5,7 +5,7 @@ export const fetchData = async (endpoint: string) => {
     const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer YOUR_TOKEN_HERE', // Si necesitas autenticación
+        Authorization: 'Bearer YOUR_TOKEN_HERE', 
       },
     });
     if (!response.ok) {

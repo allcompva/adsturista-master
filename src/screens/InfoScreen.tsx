@@ -1,11 +1,10 @@
-
 import { StackNavigationProp } from '@react-navigation/stack';
-import React from 'react';
-import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, Button, ImageBackground, SafeAreaView, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, ImageBackground, SafeAreaView, Alert } from 'react-native';
+import { WebView } from "react-native-webview";
 import Header from '../components/header';
-import Card from '../components/card';
-import GlobalStyles from '../styles/GlobalStyles';
-
+import { Provider } from 'react-native-paper';
+import LoadingIndicator from '../components/LoadingIndicator/LoadingIndicator';
 
 type RootStackParamList = {
   LoginScreen: undefined;
@@ -18,117 +17,185 @@ interface Props {
   navigation: InfoScreenNavigationProp;
 }
 
+interface Video {
+  id_youtube: string; 
+  titulo: string;
+  resenia: string;
+  pie: string;
+}
+
+const { width: screenWidth } = Dimensions.get('window');
+
 const InfoScreen: React.FC<Props> = ({ navigation }) => {
-  const handleSkip = () => {
-    navigation.navigate('Main'); 
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+
+  const fetchVideos = async () => {
+    try {
+      const response = await fetch("https://recreas.net/BackEnd/Tur_videos/read"); 
+      if (!response.ok) {
+        throw new Error("Error al obtener los videos");
+      }
+      const data: Video[] = await response.json();
+      setVideos(data);
+    } catch (error) {
+      console.error("Error al cargar los videos:", error);
+      Alert.alert("Error", "No se pudieron cargar los videos.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleContinue = () => {
-    navigation.navigate('Main'); 
+
+  useEffect(() => {
+    fetchVideos();
+  }, []);
+
+
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex((prev) => prev - 1);
+    } else {
+      Alert.alert("Aviso", "Este es el primer video.");
+    }
   };
+
+  const handleNext = () => {
+    if (currentIndex < videos.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+    } else {
+      Alert.alert("Aviso", "Este es el último video.");
+    }
+  };
+
+
+  if (loading) {
+    return (
+      <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <LoadingIndicator />
+        <Text>Cargando videos...</Text>
+      </SafeAreaView>
+    );
+  }
+
+ 
+  if (videos.length === 0) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text>No hay videos disponibles.</Text>
+      </SafeAreaView>
+    );
+  }
+
+  const currentVideo = videos[currentIndex];
+
   return (
-    <ImageBackground
-      source={require('../assets/fondo2.png')} 
-      style={styles.background}
-      resizeMode="cover"
-    >
-      <View style={{ justifyContent: 'center', alignItems: 'center', position: 'absolute', top: '15%', width: '100%' }}>
-        <Text style={{ fontSize: 24, fontWeight: '700', textAlign: 'center', marginTop: 85, }}>Reciclaje y Cuidado del Medio Ambiente</Text>
-        <Text style={{ fontSize: 16, fontWeight: '400', textAlign: 'center', marginTop: 15, paddingHorizontal: 25 }}>Reciclar es una acción simple.
-          Descubre las mejores prácticas, y cómo integrarlas en tu día a día.</Text>
-        <Image
-          source={require('../assets/images/video.png')}
-          style={{ width: '80%', marginTop: 15 }}
-        />
-        <Text style={{ fontSize: 16, fontWeight: '600', textAlign: 'center', marginTop: 5, paddingHorizontal: 25 }}>
-          Cómo separar correctamente los residuos</Text>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleContinue}>
-            <Text style={styles.buttonText}>Cargar mas recursos</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={handleSkip}>
-            <Text style={styles.skipText}>Ir al inicio</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View>
-
-      </View>
-    </ImageBackground>
-  )
+    <Provider>
+      <SafeAreaView style={[styles.container, { marginTop: 0 }]}>
+        <ImageBackground
+          source={require('../assets/fondo4.png')}
+          style={styles.background}
+          resizeMode="cover"
+        >
+          <View style={styles.header}>
+            <Header />
+          </View>
+          <View>
+            <Text style={styles.title}>{currentVideo.titulo}</Text>
+            <Text style={styles.subtitle}>{currentVideo.resenia}</Text>
+          </View>
+          <View style={styles.webviewContainer}>
+            <WebView
+              source={{ uri: `https://www.youtube.com/embed/${currentVideo.id_youtube}?autoplay=1&controls=0&modestbranding=1` }}
+              allowsFullscreenVideo
+            />
+          </View>
+          <View>
+            <Text style={styles.footer}>{currentVideo.pie}</Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.buttonL} onPress={handlePrevious}>
+                <Text style={styles.buttonText}>{"\u003C"} Anterior</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.buttonR} onPress={handleNext}>
+                <Text style={styles.buttonText}>Próximo {"\u003E"}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ImageBackground>
+      </SafeAreaView>
+    </Provider>
+  );
 };
-
-const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
-
-    backgroundColor: '#fff',
+    flex: 1,
+    backgroundColor: "#fff",
   },
   background: {
     flex: 1,
-    width: '100%', 
-  },  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-  },
-  skipText: {
-    width: '100%',
-    fontSize: 18,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  buttonContainer: {
-    marginTop: '5%',
-    textAlign: 'center',
-    justifyContent: 'center',
-    width: '80%',
-    marginLeft: '10%',
-    marginRight: '10%',
-    maxWidth: '80%',
-  },
-  button: {
-    backgroundColor: '#ff6b00',
-    padding: 10,
-    height: 50,
-    borderRadius: 25,
-    width: '100%',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-
-  video: {
-    width: 350,
-    height: 275,
+    width: "100%",
+    height: "100%",
   },
   header: {
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#f8f8f8', 
-  },
-  logo: {
-    width: 100,
-    height: 100,
-    resizeMode: 'contain', 
+    marginBottom: 10,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    marginTop: 10,
+    fontWeight: "700",
+    textAlign: "center",
+    marginTop: 40,
   },
-  videoContainer: {
-    width: width - 40,
-    height: (width - 40) * (514 / 914), 
-    alignSelf: 'center',
-    marginVertical: 20,
+  subtitle: {
+    fontSize: 18,
+    fontWeight: "400",
+    textAlign: "center",
+    marginTop: 15,
+    paddingHorizontal: 25,
   },
-  textContainer: {
-    padding: 20,
+  webviewContainer: {
+    flexDirection: "row",
+    height: 250,
+    paddingHorizontal: 25,
+    marginTop: 25,
+    borderRadius: 10,
+    overflow: "hidden",
+
   },
-  description: {
+  footer: {
     fontSize: 16,
-    textAlign: 'center',
+    fontWeight: "600",
+    textAlign: "center",
+    marginTop: 5,
+    paddingHorizontal: 25,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 25,
+    marginTop: 50,
+  },
+
+  buttonR: {
+    backgroundColor: '#FF6B00',
+    padding: 15,
+    borderRadius: 25,
+    alignItems: 'center',
+    marginHorizontal: 20,
+  },
+  buttonL: {
+    backgroundColor: '#FF6B00',
+    padding: 15,
+    borderRadius: 25,
+    alignItems: 'center',
+    marginHorizontal: 20,
+  },
+  buttonText: {
+    fontSize: 20,
+    fontWeight: "600",
+    color:'white'
   },
 });
 

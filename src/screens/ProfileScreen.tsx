@@ -1,27 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, SafeAreaView, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, SafeAreaView, ImageBackground, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Header from '../components/header';
 import { Switch } from 'react-native-paper';
 import GlobalStyles from '../styles/GlobalStyles';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useAuth } from '../contexts/AuthContext';
+import { Ionicons } from '@expo/vector-icons';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+
 
 // Define el tipo de las rutas
 type RootStackParamList = {
   ProfileScreen: undefined;
-LoginScreen: undefined;
+  LoginSocial: undefined;
 };
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'ProfileScreen'>;
 interface Props {
-navigation: LoginScreenNavigationProp;
+  navigation: LoginScreenNavigationProp;
 }
 
 
 const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const [isEnabled, setIsEnabled] = useState(false);
+  const { user, setUser } = useAuth();
 
+  const [imgUrl, setImgUrl] = useState('');
+  useEffect(() => {
+
+    if(user?.photoURL != null)
+      {
+        setImgUrl(user?.photoURL);
+      }
+      else
+      {
+        setImgUrl('../assets/images/usuario.png');
+      }
+
+  }, []);
 
   const toggleSwitch = async () => {
     const newValue = !isEnabled;
@@ -31,13 +51,21 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 
 
 
-  const handleLogout = () => {
-    navigation.navigate('LoginScreen')
+  const handleLogout = async () => {
+    try {
+      await GoogleSignin.signOut();
+      await AsyncStorage.removeItem("@user");
+      setUser(null);
+      Alert.alert('Sesión cerrada correctamente');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+    navigation.navigate('LoginSocial')
   };
 
   return (
     <ImageBackground
-      source={require('../assets/fondo4.png')} 
+      source={require('../assets/fondo4.png')}
       style={styles.background}
       resizeMode="cover"
     >
@@ -47,28 +75,28 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
       </View>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.profileContainer}>
-          <Image source={require('../assets/images/usuario.png')} style={styles.logoUsuario} />
-          <Text style={styles.userName}>Juan Perez</Text>
+          <Image source={{ uri: imgUrl}} style={styles.logoUsuario} />
+          <Text style={styles.userName}>{user?.displayName}</Text>
         </View>
         <View style={styles.sectionContainer}>
           <Text style={GlobalStyles.subtitleCenter}>Datos</Text>
           <View style={styles.infoRow}>
-            <Icon name="mail-outline" style={styles.iconDatos} />
-            <Text style={styles.infoText}>correo@gmail.com</Text>
+            <Ionicons name="mail-outline" style={styles.iconDatos} />
+            <Text style={styles.infoText}>{user?.email}</Text>
           </View>
           <View style={styles.infoRow}>
-            <Icon name="location-outline" style={styles.iconDatos} />
-            <Text style={styles.infoText}>calle, número, localidad, provincia</Text>
+            <Ionicons name="location-outline" style={styles.iconDatos} />
+            <Text style={styles.infoText}></Text>
           </View>
           <View style={styles.infoRow}>
-            <Icon name="phone-portrait-outline" style={styles.iconDatos} />
-            <Text style={styles.infoText}>351 6227659</Text>
+            <Ionicons name="phone-portrait-outline" style={styles.iconDatos} />
+            <Text style={styles.infoText}></Text>
           </View>
         </View>
         <View style={styles.notificationsContainer}>
           <Text style={styles.notificationsTitle}>Notificaciones</Text>
           <View style={styles.infoRow}>
-            <Icon name="notifications-outline" style={styles.iconDatos} />
+            <Ionicons name="notifications-outline" style={styles.iconDatos} />
             <Text style={styles.infoText}>Notificaciones</Text>
             <Switch
               value={isEnabled}
@@ -92,7 +120,7 @@ const styles = StyleSheet.create({
   },
   background: {
     flex: 1,
-    width: '100%', 
+    width: '100%',
 
   },
   profileContainer: {
@@ -126,11 +154,11 @@ const styles = StyleSheet.create({
 
   },
   header: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'space-between', 
-    paddingHorizontal: 20, 
-    height: 80, 
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    height: 80,
     marginTop: 50,
   },
   iconDatos: {

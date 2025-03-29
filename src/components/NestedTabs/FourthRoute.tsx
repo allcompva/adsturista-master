@@ -1,12 +1,14 @@
 
 import React from 'react';
 import { ScrollView, View, StyleSheet, Text } from 'react-native';
-import { useFetch } from '../../hooks/useFetch'; // Importa el hook
+import { useFetch } from '../../hooks/useFetch'; 
 import Card from '../card';
 import LoadingIndicator from  '../LoadingIndicator/LoadingIndicator';
+import { useAuth } from '../../contexts/AuthContext';
 
 const FourthRoute = () => {
-  const { data, loading, error } = useFetch('https://recreas.net/BackEnd/Tur_publicaciones/GetByCategoria?id=4');
+  const { user } = useAuth();
+  const { data, loading, error } = useFetch(`https://recreas.net/BackEnd/Tur_publicaciones/GetByCategoriaMail?id=4&mail=${user?.email}`);
 
   if (loading) {
     return <LoadingIndicator message="Cargando datos..." />;
@@ -27,8 +29,11 @@ const FourthRoute = () => {
           <Card
             title={item.nombre}
             description={item.resenia}
-            imageUrl={{ uri: 'https://recreas.net' + item.img }} 
+            imageUrl={{ uri: `https://recreas.net/assets/images/${item.fotos.split(',')[0]}` }}
             id={item.id_comercio}
+            _isFavorite={item.is_favorite}
+            idP={item.id}
+            showExtra={false}
           />
         </View>
       ))}
