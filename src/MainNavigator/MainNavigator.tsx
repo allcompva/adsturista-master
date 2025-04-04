@@ -18,9 +18,10 @@ import ProfileScreen from "../screens/ProfileScreen";
 import DetailsScreen from "../screens/DetailsScreen";
 import PromoList from "../screens/PromoList";
 import PuntosAcumuladosScreen from "../screens/PuntosAcumuladosScreen";
-
+import CanjesHistoryScreen from "../screens/CanjesHistoryScreen";
 
 import { useAuth } from "../contexts/AuthContext";
+import { PointsProvider } from "../contexts/PointsContext";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -91,7 +92,9 @@ function TabNavigator() {
         options={{
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
-              name={focused ? "information-circle" : "information-circle-outline"}
+              name={
+                focused ? "information-circle" : "information-circle-outline"
+              }
               color={color}
               size={24}
             />
@@ -151,27 +154,32 @@ export default function MainNavigator() {
       const token = (await Notifications.getExpoPushTokenAsync()).data;
       console.log("Expo Push Token:", token);
 
-     
       try {
-        await fetch(`https://recreas.net/BackEnd/Tur_turista/setToken?email=${user?.email}&token=${token}`, {
-          method: "GET"
-        });
+        await fetch(
+          `https://recreas.net/BackEnd/Tur_turista/setToken?email=${user?.email}&token=${token}`,
+          {
+            method: "GET",
+          }
+        );
         console.log("Token registrado correctamente.");
       } catch (error) {
         console.error("Error al registrar el token:", error);
       }
     };
 
-    const notificationListener =
-      Notifications.addNotificationReceivedListener((notification) => {
+    const notificationListener = Notifications.addNotificationReceivedListener(
+      (notification) => {
         console.log("Notificación recibida:", notification);
         Alert.alert(
-          notification.request.content.title?
-          notification.request.content.title: '',
-          notification.request.content.body?
-          notification.request.content.body: ''
+          notification.request.content.title
+            ? notification.request.content.title
+            : "",
+          notification.request.content.body
+            ? notification.request.content.body
+            : ""
         );
-      });
+      }
+    );
 
     const responseListener =
       Notifications.addNotificationResponseReceivedListener((response) => {
@@ -198,17 +206,26 @@ export default function MainNavigator() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{ headerShown: false }}
-        initialRouteName={initialRoute}
-      >
-        <Stack.Screen name="LoginSocial" component={LoginSocial} />
-        <Stack.Screen name="FormScreen" component={FormScreen} />
-        <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
-        <Stack.Screen name="PuntosAcumuladosScreen" component={PuntosAcumuladosScreen} />
-        <Stack.Screen name="PromoList" component={PromoList} />
-        <Stack.Screen name="Main" component={TabNavigator} />
-      </Stack.Navigator>
+      <PointsProvider>
+        <Stack.Navigator
+          screenOptions={{ headerShown: false }}
+          initialRouteName={initialRoute}
+        >
+          <Stack.Screen name="LoginSocial" component={LoginSocial} />
+          <Stack.Screen name="FormScreen" component={FormScreen} />
+          <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
+          <Stack.Screen
+            name="PuntosAcumuladosScreen"
+            component={PuntosAcumuladosScreen}
+          />
+          <Stack.Screen name="PromoList" component={PromoList} />
+          <Stack.Screen
+            name="CanjesHistoryScreen"
+            component={CanjesHistoryScreen}
+          />
+          <Stack.Screen name="Main" component={TabNavigator} />
+        </Stack.Navigator>
+      </PointsProvider>
     </NavigationContainer>
   );
 }

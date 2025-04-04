@@ -17,7 +17,7 @@ export const signInWithGoogle = async (
       showPlayServicesUpdateDialog: true,
     });
 
-    const signInResponse = await GoogleSignin.signIn() as {
+    const signInResponse = (await GoogleSignin.signIn()) as {
       data: {
         idToken: string;
         user: {
@@ -48,8 +48,8 @@ export const signOutWithGoogle = async () => {
   try {
     await auth().signOut();
 
-    await GoogleSignin.revokeAccess(); 
-    await GoogleSignin.signOut(); 
+    await GoogleSignin.revokeAccess();
+    await GoogleSignin.signOut();
 
     console.log("Cierre de sesión exitoso");
   } catch (error) {

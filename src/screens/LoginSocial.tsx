@@ -40,59 +40,115 @@ const LoginSocial: React.FC = () => {
 
       if (user) {
         navigation.replace(formStatus ? "Main" : "FormScreen");
-      } 
+      }
     };
 
     checkSession();
   }, []);
 
+  // const handleSignInGoogle = async () => {
+  //   await signInWithGoogle(
+  //     async (userCredential) => {
+  //       const user = userCredential.user;
 
-  const handleSignInGoogle = async () => {
-    await signInWithGoogle(
-      async (userCredential) => {
-        const user = userCredential.user;
+  //       try {
 
-        try {
+  //         await AsyncStorage.setItem("@user", JSON.stringify(user));
 
-          await AsyncStorage.setItem("@user", JSON.stringify(user));
+  //         console.log(JSON.stringify(user));
+  //         const data = {
+  //           nombre: user.displayName,
+  //           mail: user.email,
+  //           photo: user.photo,
+  //         };
 
-          console.log(JSON.stringify(user));
-          const data = {
-            nombre: user.displayName,
-            mail: user.email,
-            photo: user.photo,
-          };
+  //         const response = await fetch(
+  //           "https://recreas.net/backend/tur_turista/insert",
+  //           {
+  //             method: "POST",
+  //             headers: {
+  //               "Content-Type": "application/json",
+  //             },
+  //             body: JSON.stringify(data),
+  //           }
+  //         );
 
+  //         if (!response.ok) {
+  //           throw new Error("Error al insertar el usuario en la API");
+  //         }
 
-          const response = await fetch(
-            "https://recreas.net/backend/tur_turista/insert",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(data),
-            }
-          );
+  //         const formStatus = await AsyncStorage.getItem("@formCompleted");
+  //         const isFormCompleted = formStatus
+  //           ? JSON.parse(formStatus).isCompleted
+  //           : false;
 
-          if (!response.ok) {
-            throw new Error("Error al insertar el usuario en la API");
-          }
+  //         navigation.replace(isFormCompleted ? "Main" : "FormScreen");
+  //       } catch (error) {
+  //         console.error("Error:", error);
+  //         Alert.alert("Error", "No se pudo completar la operación");
+  //       }
+  //     },
+  //     setIsLoading
+  //   );
+  // };
 
-          const formStatus = await AsyncStorage.getItem("@formCompleted");
-          const isFormCompleted = formStatus
-            ? JSON.parse(formStatus).isCompleted
-            : false;
+  const fakeSignIn = async () => {
+    try {
+      setIsLoading(true);
 
+      // Crear un usuario falso
+      const fakeUser = {
+        uid: "fake-user-123",
+        email: "usuario.falso@example.com",
+        displayName: "John Doe",
+        photoURL: null,
+        emailVerified: true,
+        isAnonymous: false,
+        metadata: {
+          creationTime: new Date().toISOString(),
+          lastSignInTime: new Date().toISOString(),
+        },
+        providerData: [
+          {
+            providerId: "google.com",
+            uid: "fake-google-uid",
+            displayName: "John Doe",
+            email: "usuario.falso@example.com",
+            phoneNumber: null,
+            photoURL: null,
+          },
+        ],
+        refreshToken: "fake-refresh-token",
+        tenantId: null,
+        delete: async () => {},
+        getIdToken: async () => "fake-id-token",
+        getIdTokenResult: async () => ({
+          token: "fake-id-token",
+          claims: {},
+          authTime: new Date().toISOString(),
+          issuedAtTime: new Date().toISOString(),
+          expirationTime: new Date(Date.now() + 3600000).toISOString(),
+          signInProvider: "google.com",
+          signInSecondFactor: null,
+        }),
+        reload: async () => {},
+        toJSON: () => ({}),
+      };
 
-          navigation.replace(isFormCompleted ? "Main" : "FormScreen");
-        } catch (error) {
-          console.error("Error:", error);
-          Alert.alert("Error", "No se pudo completar la operación");
-        }
-      },
-      setIsLoading
-    );
+      // Guardar el usuario falso en AsyncStorage
+      await AsyncStorage.setItem("@user", JSON.stringify(fakeUser));
+
+      // Actualizar el contexto de autenticación
+      setUser(fakeUser as any);
+
+      // Navegar a la pantalla de formulario
+      navigation.replace("FormScreen");
+    } catch (error) {
+      console.error("Error en fakeSignIn:", error);
+      Alert.alert("Error", "No se pudo iniciar sesión con el usuario falso");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -110,7 +166,7 @@ const LoginSocial: React.FC = () => {
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               style={GlobalStyles.buttonWithIcon}
-              onPress={handleSignInGoogle}
+              onPress={fakeSignIn}
             >
               <Image
                 source={require("../assets/images/google.png")}
