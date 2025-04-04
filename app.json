@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "adsturista",
-    "slug": "adsturista",
+    "name": "Adsturista Puntos",
+    "slug": "adsturista-puntos",
     "extra": {
       "googleClientId": "572084472316-2e9m0s0o6ibmdqgivk4rj3t0jjpjq86q.apps.googleusercontent.com",
       "redirectUri": "https://auth.expo.io/@martin2024/adsturista",
@@ -16,20 +16,22 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.martin2024.adsturista"
     },
     "android": {
+      "package": "com.adsturista.puntos",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.martin2024.adsturista",
+      "versionCode": 1,
       "googleServicesFile": "./google-services.json"
     },
     "web": {
