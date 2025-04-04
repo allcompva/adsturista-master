@@ -16,9 +16,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../MainNavigator/types";
 
-type LoginScreenNavigationProp = StackNavigationProp<
+type PromoListNavigationProp = StackNavigationProp<
   RootStackParamList,
-  "InfoScreen"
+  "PromoList"
 >;
 
 interface PromoData {
@@ -32,7 +32,7 @@ interface PromoData {
 }
 
 const PromoList = () => {
-  const navigation = useNavigation<LoginScreenNavigationProp>();
+  const navigation = useNavigation<PromoListNavigationProp>();
   const [promos, setPromos] = useState<PromoData[]>([]);
   const { user } = useAuth();
   const { points } = usePoints();
@@ -57,8 +57,8 @@ const PromoList = () => {
     navigation.navigate("CanjesHistoryScreen");
   };
 
-  const handlePress2 = () => {
-    navigation.navigate("PuntosAcumuladosScreen");
+  const handleDepositarResiduos = () => {
+    navigation.navigate("DepositarResiduosScreen");
   };
 
   return (
@@ -99,7 +99,7 @@ const PromoList = () => {
             <Text style={{ fontSize: 14 }}> pts</Text>
           </Text>
           <TouchableOpacity
-            onPress={handlePress2}
+            onPress={handleDepositarResiduos}
             style={{
               borderColor: "darkcyan",
               borderWidth: 1,

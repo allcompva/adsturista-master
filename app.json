@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Adsturista Puntos",
-    "slug": "adsturista-puntos",
+    "slug": "adsturista",
     "extra": {
       "googleClientId": "572084472316-2e9m0s0o6ibmdqgivk4rj3t0jjpjq86q.apps.googleusercontent.com",
       "redirectUri": "https://auth.expo.io/@martin2024/adsturista",

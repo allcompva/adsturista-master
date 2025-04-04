@@ -19,6 +19,7 @@ import DetailsScreen from "../screens/DetailsScreen";
 import PromoList from "../screens/PromoList";
 import PuntosAcumuladosScreen from "../screens/PuntosAcumuladosScreen";
 import CanjesHistoryScreen from "../screens/CanjesHistoryScreen";
+import DepositarResiduosScreen from "../screens/DepositarResiduosScreen";
 
 import { useAuth } from "../contexts/AuthContext";
 import { PointsProvider } from "../contexts/PointsContext";
@@ -208,22 +209,28 @@ export default function MainNavigator() {
     <NavigationContainer>
       <PointsProvider>
         <Stack.Navigator
-          screenOptions={{ headerShown: false }}
+          screenOptions={{
+            headerShown: false,
+          }}
           initialRouteName={initialRoute}
         >
           <Stack.Screen name="LoginSocial" component={LoginSocial} />
           <Stack.Screen name="FormScreen" component={FormScreen} />
-          <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
+          <Stack.Screen name="Main" component={TabNavigator} />
+          <Stack.Screen name="Details" component={DetailsScreen} />
+          <Stack.Screen name="PromoList" component={PromoList} />
           <Stack.Screen
             name="PuntosAcumuladosScreen"
             component={PuntosAcumuladosScreen}
           />
-          <Stack.Screen name="PromoList" component={PromoList} />
           <Stack.Screen
             name="CanjesHistoryScreen"
             component={CanjesHistoryScreen}
           />
-          <Stack.Screen name="Main" component={TabNavigator} />
+          <Stack.Screen
+            name="DepositarResiduosScreen"
+            component={DepositarResiduosScreen}
+          />
         </Stack.Navigator>
       </PointsProvider>
     </NavigationContainer>

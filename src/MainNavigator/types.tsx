@@ -15,4 +15,5 @@ export type RootStackParamList = {
   LoginSocial: undefined;
   PromoList: undefined;
   CanjesHistoryScreen: undefined;
+  DepositarResiduosScreen: undefined;
 };
