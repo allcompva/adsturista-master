@@ -16,6 +16,7 @@ import GlobalStyles from "../styles/GlobalStyles";
 import { signInWithGoogle } from "../hooks/usegoogle";
 import { useAuth } from "../contexts/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDemoAuth } from "../contexts/DemoAuthContext";
 
 type RootStackParamList = {
   LoginSocial: undefined;
@@ -32,6 +33,7 @@ const LoginSocial: React.FC = () => {
   const navigation = useNavigation<LoginScreenNavigationProp>();
   const [isLoading, setIsLoading] = useState(false);
   const { user, setUser } = useAuth();
+  const { setUser: setDemoUser } = useDemoAuth();
 
   useEffect(() => {
     const checkSession = async () => {
@@ -95,8 +97,6 @@ const LoginSocial: React.FC = () => {
   const fakeSignIn = async () => {
     try {
       setIsLoading(true);
-
-      // Crear un usuario falso
       const fakeUser = {
         uid: "fake-user-123",
         email: "usuario.falso@example.com",
@@ -134,15 +134,12 @@ const LoginSocial: React.FC = () => {
         reload: async () => {},
         toJSON: () => ({}),
       };
-
-      // Guardar el usuario falso en AsyncStorage
       await AsyncStorage.setItem("@user", JSON.stringify(fakeUser));
-
-      // Actualizar el contexto de autenticación
-      setUser(fakeUser as any);
-
-      // Navegar a la pantalla de formulario
-      navigation.replace("FormScreen");
+      setDemoUser(fakeUser);
+      console.log("Seteado usuario demo:", fakeUser);
+      setTimeout(() => {
+        navigation.replace("FormScreen");
+      }, 300);
     } catch (error) {
       console.error("Error en fakeSignIn:", error);
       Alert.alert("Error", "No se pudo iniciar sesión con el usuario falso");
@@ -173,7 +170,7 @@ const LoginSocial: React.FC = () => {
                 style={GlobalStyles.buttonIcon}
               />
               <Text style={GlobalStyles.buttonIconText}>
-                Continúa con Google
+                Iniciar Sesión (Demo)
               </Text>
             </TouchableOpacity>
           </View>

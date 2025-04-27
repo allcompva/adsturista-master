@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,12 +6,14 @@ import {
   StyleSheet,
   TouchableOpacity,
   ImageSourcePropType,
+  Alert,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { useAuth } from "../contexts/AuthContext";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../MainNavigator/types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import FavoriteEvents from "../FavoriteEvents";
 
 type DetailsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -27,6 +29,7 @@ interface CardProps {
   idP: number;
   onReload?: () => void;
   showExtra: boolean;
+  focusKey?: number;
 }
 
 const Card: React.FC<CardProps> = ({
@@ -38,42 +41,65 @@ const Card: React.FC<CardProps> = ({
   idP,
   onReload,
   showExtra,
+  focusKey,
 }) => {
-  const [isFavorite, setIsFavorite] = useState(_isFavorite);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const navigation = useNavigation<DetailsScreenNavigationProp>();
-  console.log(imageUrl);
-  const { user } = useAuth();
+
+  useEffect(() => {
+    const checkFavorite = async () => {
+      const existingFavorites = await AsyncStorage.getItem("@favorites");
+      const favorites = existingFavorites ? JSON.parse(existingFavorites) : [];
+      setIsFavorite(favorites.some((fav: any) => fav.id === idP));
+    };
+    checkFavorite();
+    // Escuchar cambios globales de favoritos
+    const handler = () => checkFavorite();
+    FavoriteEvents.on("favoritesChanged", handler);
+    return () => {
+      FavoriteEvents.off("favoritesChanged", handler);
+    };
+  }, [idP, focusKey]);
 
   const handleFavoriteToggle = async () => {
-    console.log("id publicacion:", idP);
-    console.log("id publicacion:", user?.email);
-    if (idP == 0) {
-      return;
-    }
-    if (user?.email == "") {
-      return;
-    }
-    const data = {
-      id_publicacion: idP,
-      mail: user?.email,
-    };
+    try {
+      const existingFavorites = await AsyncStorage.getItem("@favorites");
+      let favorites = existingFavorites ? JSON.parse(existingFavorites) : [];
+      let updatedFavorites;
 
-    const response = await fetch(
-      "https://recreas.net/backend/Favoritos/insert",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+      if (isFavorite) {
+        updatedFavorites = favorites.filter((fav: any) => fav.id !== idP);
+        console.log("Favorito eliminado:", idP);
+      } else {
+        if (!favorites.some((fav: any) => fav.id === idP)) {
+          updatedFavorites = [
+            ...favorites,
+            {
+              id: idP,
+              title,
+              description,
+              imageUrl,
+              id_comercio: id,
+              is_favorite: true,
+            },
+          ];
+          console.log("Favorito agregado:", idP);
+        } else {
+          updatedFavorites = favorites;
+        }
       }
-    );
 
-    setIsFavorite(!isFavorite);
-    if (onReload) {
-      console.log("Llamando a onReload desde Card");
-      onReload();
+      await AsyncStorage.setItem(
+        "@favorites",
+        JSON.stringify(updatedFavorites)
+      );
+      setIsFavorite(!isFavorite);
+      if (onReload) onReload();
+      FavoriteEvents.emit("favoritesChanged");
+      console.log("Favoritos actuales:", updatedFavorites);
+    } catch (error) {
+      console.log("Error al guardar/eliminar favorito:", error);
     }
   };
 

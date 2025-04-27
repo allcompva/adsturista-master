@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import MainNavigator from "./src/MainNavigator/MainNavigator";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { AuthProvider } from "./src/contexts/AuthContext";
+import { DemoAuthProvider } from "./src/contexts/DemoAuthContext";
 
 export default function App() {
   useEffect(() => {
@@ -14,8 +15,10 @@ export default function App() {
   }, []);
 
   return (
-    <AuthProvider>
-      <MainNavigator />
-    </AuthProvider>
+    <DemoAuthProvider>
+      <AuthProvider>
+        <MainNavigator />
+      </AuthProvider>
+    </DemoAuthProvider>
   );
 }

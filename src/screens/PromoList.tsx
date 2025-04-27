@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
 import PromoCard from "../components/PromoCard";
 import { useAuth } from "../contexts/AuthContext";
 import { usePoints } from "../contexts/PointsContext";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import Header from "../components/header";
 import { Ionicons } from "@expo/vector-icons";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -36,6 +36,13 @@ const PromoList = () => {
   const [promos, setPromos] = useState<PromoData[]>([]);
   const { user } = useAuth();
   const { points } = usePoints();
+  const [focusKey, setFocusKey] = useState(0);
+
+  useFocusEffect(
+    useCallback(() => {
+      setFocusKey((prev) => prev + 1);
+    }, [])
+  );
 
   useEffect(() => {
     const fetchPromos = async () => {
@@ -163,6 +170,7 @@ const PromoList = () => {
               points={item.points}
               rating={item.rating}
               conditions={item.conditions}
+              focusKey={focusKey}
             />
           )}
           numColumns={2}
