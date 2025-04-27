@@ -23,7 +23,7 @@ const FirstRoute = () => {
     );
   }
   var v = data[0].fotos.split(",");
-  console.log(v[0]);
+
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       {data.map((item, index) => (

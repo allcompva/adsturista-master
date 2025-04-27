@@ -23,6 +23,7 @@ export default function MainNavigator() {
           <Stack.Screen name="FormScreen" component={FormScreen} />
           <Stack.Screen name="Main" component={Main} />
           <Stack.Screen name="InfoScreen" component={InfoScreen} />
+          
           <Stack.Screen
             name="CanjesHistoryScreen"
             component={CanjesHistoryScreen}

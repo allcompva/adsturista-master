@@ -217,7 +217,7 @@ export default function MainNavigator() {
           <Stack.Screen name="LoginSocial" component={LoginSocial} />
           <Stack.Screen name="FormScreen" component={FormScreen} />
           <Stack.Screen name="Main" component={TabNavigator} />
-          <Stack.Screen name="Details" component={DetailsScreen} />
+          <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
           <Stack.Screen name="PromoList" component={PromoList} />
           <Stack.Screen
             name="PuntosAcumuladosScreen"
